@@ -1,0 +1,43 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/indlovu-core",
+    "crates/indlovu-compliance",
+    "crates/indlovu-server",
+    "crates/indlovu-python",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/ameen/indlovu"
+description = "A privacy-first vector search database with built-in POPIA/GDPR compliance"
+
+[workspace.dependencies]
+# Vector search
+usearch = "2"
+
+# Full-text search
+tantivy = "0.22"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# HTTP server
+axum = "0.8"
+
+# Python bindings
+pyo3 = { version = "0.23", features = ["extension-module"] }
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
