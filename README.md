@@ -160,6 +160,35 @@ curl -X POST http://localhost:6333/collections/docs/erase \
   -d '{"source_document_id": "doc1"}'
 ```
 
+### Landing Page A/B CTA Experiment
+
+The landing page (`site/index.html`) now includes a simple CTA copy experiment with two variants (`a` and `b`).
+
+- Variant assignment is feature-flagged via `cta_variant` query param (`?cta_variant=a` or `?cta_variant=b`).
+- If no query param is provided, a random variant is assigned and persisted in `localStorage`.
+- CTA clicks are sent to `POST /analytics/conversion` with `variant` and `cta_id`.
+
+#### Read experiment results
+
+```bash
+# Summary of total conversions + breakdown by variant and CTA location
+curl http://localhost:6333/analytics/conversions
+```
+
+Example response:
+
+```json
+{
+  "success": true,
+  "data": {
+    "total_events": 12,
+    "by_variant": {"a": 5, "b": 7},
+    "by_cta": {"hero-primary-cta": 8, "footer-primary-cta": 4}
+  },
+  "error": null
+}
+```
+
 ## Compliance
 
 Indlovu is designed for organizations operating under **POPIA** (South Africa's Protection of Personal Information Act) and **GDPR** (EU General Data Protection Regulation).

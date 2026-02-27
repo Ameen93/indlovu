@@ -1,8 +1,8 @@
 //! HTTP request handlers for the Indlovu API.
 
+use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
-use axum::Json;
 use indlovu_core::traits::{ErasureSupport, VectorStore};
 use indlovu_core::types::VectorRecord;
 use serde::{Deserialize, Serialize};
@@ -46,6 +46,12 @@ pub struct EraseRequest {
     pub source_document_id: String,
 }
 
+#[derive(Deserialize)]
+pub struct ConversionRequest {
+    pub variant: String,
+    pub cta_id: String,
+}
+
 #[derive(Serialize)]
 pub struct ApiResponse<T: Serialize> {
     pub success: bool,
@@ -55,13 +61,21 @@ pub struct ApiResponse<T: Serialize> {
 
 impl<T: Serialize> ApiResponse<T> {
     fn ok(data: T) -> Json<Self> {
-        Json(Self { success: true, data: Some(data), error: None })
+        Json(Self {
+            success: true,
+            data: Some(data),
+            error: None,
+        })
     }
 
     fn err(msg: impl Into<String>) -> (StatusCode, Json<Self>) {
         (
             StatusCode::BAD_REQUEST,
-            Json(Self { success: false, data: None, error: Some(msg.into()) }),
+            Json(Self {
+                success: false,
+                data: None,
+                error: Some(msg.into()),
+            }),
         )
     }
 }
@@ -93,7 +107,10 @@ pub async fn create_collection(
         .create_collection(&req.name, req.dimensions, policy)
         .map_err(ApiResponse::err)?;
 
-    Ok(ApiResponse::ok(format!("Collection '{}' created", req.name)))
+    Ok(ApiResponse::ok(format!(
+        "Collection '{}' created",
+        req.name
+    )))
 }
 
 pub async fn insert_vector(
@@ -126,8 +143,10 @@ pub async fn search_vectors(
     State(state): State<AppState>,
     Path(collection_name): Path<String>,
     Json(req): Json<SearchRequest>,
-) -> Result<Json<ApiResponse<Vec<serde_json::Value>>>, (StatusCode, Json<ApiResponse<Vec<serde_json::Value>>>)>
-{
+) -> Result<
+    Json<ApiResponse<Vec<serde_json::Value>>>,
+    (StatusCode, Json<ApiResponse<Vec<serde_json::Value>>>),
+> {
     let collections = state.collections.read().unwrap();
     let col = collections
         .get(&collection_name)
@@ -175,4 +194,33 @@ pub async fn erase_by_source(
         "deleted_count": deleted_ids.len(),
         "deleted_ids": deleted_ids,
     })))
+}
+
+pub async fn capture_conversion(
+    State(state): State<AppState>,
+    Json(req): Json<ConversionRequest>,
+) -> Result<Json<ApiResponse<serde_json::Value>>, (StatusCode, Json<ApiResponse<serde_json::Value>>)>
+{
+    if req.variant.trim().is_empty() || req.cta_id.trim().is_empty() {
+        return Err(ApiResponse::err("variant and cta_id are required"));
+    }
+
+    state.record_conversion(req.variant.clone(), req.cta_id.clone());
+
+    Ok(ApiResponse::ok(serde_json::json!({
+        "recorded": true,
+        "variant": req.variant,
+        "cta_id": req.cta_id,
+    })))
+}
+
+pub async fn conversion_results(
+    State(state): State<AppState>,
+) -> Json<ApiResponse<serde_json::Value>> {
+    let summary = state.conversion_summary();
+    ApiResponse::ok(serde_json::json!({
+        "total_events": summary.total_events,
+        "by_variant": summary.by_variant,
+        "by_cta": summary.by_cta,
+    }))
 }
