@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indlovu — Privacy-First Vector Database</title>
+  <meta name="description" content="Privacy-first vector database with built-in POPIA/GDPR compliance. The elephant never forgets — unless you ask it to.">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --text: #e4e4ef;
+      --muted: #8888a0;
+      --accent: #6c63ff;
+      --accent-light: #8b83ff;
+      --green: #22c55e;
+      --gold: #f59e0b;
+      --code-bg: #1a1a2e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* Nav */
+    nav {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      background: rgba(10,10,15,0.95);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    nav .logo { font-size: 1.3rem; font-weight: 700; text-decoration: none; color: var(--text); }
+    nav .links a { color: var(--muted); text-decoration: none; margin-left: 28px; font-size: 0.95rem; transition: color 0.2s; }
+    nav .links a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 100px 0 80px;
+    }
+    .hero .emoji { font-size: 4.5rem; display: block; margin-bottom: 20px; }
+    .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 16px; letter-spacing: -1px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--accent), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero .tagline { font-size: 1.25rem; color: var(--muted); max-width: 650px; margin: 0 auto 40px; }
+    .hero .badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+    .badge { padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid var(--border); background: var(--surface); }
+    .badge.green { border-color: #22c55e44; color: var(--green); }
+    .badge.gold { border-color: #f59e0b44; color: var(--gold); }
+    .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600;
+      font-size: 1rem; transition: all 0.2s; display: inline-block;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); }
+    .btn-secondary { border: 1px solid var(--border); color: var(--text); background: var(--surface); }
+    .btn-secondary:hover { border-color: var(--muted); }
+
+    /* Sections */
+    section { padding: 80px 0; }
+    section h2 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; text-align: center; }
+    section .subtitle { color: var(--muted); text-align: center; margin-bottom: 48px; font-size: 1.05rem; }
+
+    /* Features grid */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .feature-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 28px; transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: var(--accent); }
+    .feature-card .icon { font-size: 1.8rem; margin-bottom: 12px; }
+    .feature-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+    .feature-card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* How it works */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 32px; counter-reset: step; }
+    .step { text-align: center; }
+    .step::before {
+      counter-increment: step; content: counter(step);
+      display: inline-flex; width: 48px; height: 48px; border-radius: 50%;
+      background: var(--accent); color: white; font-weight: 700; font-size: 1.2rem;
+      align-items: center; justify-content: center; margin-bottom: 16px;
+    }
+    .step h3 { margin-bottom: 8px; }
+    .step p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Compliance */
+    .compliance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .compliance-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; }
+    .compliance-card h3 { color: var(--green); margin-bottom: 8px; }
+    .compliance-card p { color: var(--muted); font-size: 0.95rem; }
+
+    /* Code */
+    .code-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 32px; overflow-x: auto; }
+    pre { background: var(--code-bg); padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.9rem; line-height: 1.7; }
+    code { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace; }
+    .code-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* CTA */
+    .cta-section {
+      text-align: center; padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+    .cta-section h2 { margin-bottom: 16px; }
+    .cta-section p { color: var(--muted); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; }
+
+    /* Footer */
+    footer { padding: 32px 0; border-top: 1px solid var(--border); text-align: center; }
+    footer p { color: var(--muted); font-size: 0.9rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero .tagline { font-size: 1.05rem; }
+      section { padding: 60px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#" class="logo">🐘 Indlovu</a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#compliance">Compliance</a>
+      <a href="https://github.com/ameen/indlovu">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="emoji">🐘</span>
+    <h1><span>Indlovu</span></h1>
+    <p class="tagline">Privacy-first vector database with built-in POPIA/GDPR compliance. The elephant never forgets — unless you ask it to.</p>
+    <div class="badges">
+      <span class="badge green">✓ POPIA Compliant</span>
+      <span class="badge green">✓ GDPR Compliant</span>
+      <span class="badge gold">🦀 Built with Rust</span>
+      <span class="badge">MIT Licensed</span>
+    </div>
+    <div class="cta-group">
+      <a href="https://github.com/ameen/indlovu" class="btn btn-primary">Get Started →</a>
+      <a href="#features" class="btn btn-secondary">Learn More</a>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="container">
+    <h2>Built for Privacy-Conscious Teams</h2>
+    <p class="subtitle">Every feature designed with data protection regulations in mind</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🔍</div>
+        <h3>HNSW Vector Search</h3>
+        <p>Sub-millisecond approximate nearest neighbor search powered by usearch. Blazing fast, memory efficient.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🛡️</div>
+        <h3>Right-to-Erasure</h3>
+        <p>Cascading deletion with cryptographic erasure certificates. POPIA Section 24 and GDPR Article 17 compliant.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📋</div>
+        <h3>Audit Trails</h3>
+        <p>Append-only logging of every insert, search, and deletion. Queryable by collection and time range.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🏷️</div>
+        <h3>PII Tagging</h3>
+        <p>Mark vectors containing personal information. Stricter retention policies applied automatically.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🐍</div>
+        <h3>Python Bindings</h3>
+        <p>Native Python API via PyO3. Drop-in replacement for your existing vector search — with compliance built in.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⏰</div>
+        <h3>Retention Policies</h3>
+        <p>Configurable per-collection data lifecycle. Set it once, stay compliant automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" style="background: var(--surface);">
+  <div class="container">
+    <h2>How It Works</h2>
+    <p class="subtitle">From ingestion to erasure — compliance at every step</p>
+    <div class="steps">
+      <div class="step">
+        <h3>Create Collection</h3>
+        <p>Define dimensions, distance metric, and attach a POPIA or GDPR retention policy.</p>
+      </div>
+      <div class="step">
+        <h3>Insert Vectors</h3>
+        <p>Add embeddings with metadata, source document tracking, and PII flags. Everything is audit-logged.</p>
+      </div>
+      <div class="step">
+        <h3>Search</h3>
+        <p>k-NN vector search with metadata filtering. Results are logged but vectors are never leaked to audit.</p>
+      </div>
+      <div class="step">
+        <h3>Erase on Request</h3>
+        <p>Right-to-erasure deletes all linked vectors across collections and generates a tamper-proof certificate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compliance">
+  <div class="container">
+    <h2>Compliance Built In, Not Bolted On</h2>
+    <p class="subtitle">Designed for POPIA and GDPR from the ground up</p>
+    <div class="compliance-grid">
+      <div class="compliance-card">
+        <h3>🇿🇦 POPIA</h3>
+        <p><strong>Section 24</strong> — Right to have personal information deleted or destroyed. Indlovu provides cascading erasure with cryptographic proof that deletion occurred.</p>
+        <br>
+        <p><strong>Section 19</strong> — Retention must not be longer than necessary. Configurable retention policies auto-enforce time limits on PII-tagged collections.</p>
+      </div>
+      <div class="compliance-card">
+        <h3>🇪🇺 GDPR</h3>
+        <p><strong>Article 17</strong> — Right to erasure ("right to be forgotten"). Full cascading deletion across all collections with audit-proof certificates.</p>
+        <br>
+        <p><strong>Article 30</strong> — Records of processing activities. Append-only audit logs track every operation on personal data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background: var(--surface);">
+  <div class="container">
+    <h2>Quick Start</h2>
+    <p class="subtitle">Up and running in minutes</p>
+    <div class="code-section" style="background: transparent; border: none; padding: 0;">
+      <div class="code-label">Rust</div>
+      <pre><code>use indlovu_core::{Collection, Distance, VectorRecord};
+use indlovu_compliance::{CompliantStore, InMemoryAuditLog, RetentionPolicy};
+
+// Create a POPIA-compliant collection
+let collection = Collection::new("customers", 384, Distance::Cosine)?;
+let mut store = CompliantStore::new(collection, audit, "customers".into(), policy);
+
+// Insert PII-tagged vectors with source tracking
+let record = VectorRecord::new(vec![0.1; 384], metadata, Some("user-001".into()), true);
+store.insert(record)?;
+
+// Right-to-erasure — one call deletes everything
+store.erase_by_source("user-001")?;</code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <span style="font-size: 3rem; display: block; margin-bottom: 16px;">🐘</span>
+    <h2>Open Source. Privacy First.</h2>
+    <p>Indlovu is MIT licensed and built in the open. Star us on GitHub, file issues, or contribute.</p>
+    <div class="cta-group">
+      <a href="https://github.com/ameen/indlovu" class="btn btn-primary">⭐ Star on GitHub</a>
+      <a href="https://github.com/ameen/indlovu/issues" class="btn btn-secondary">Report an Issue</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>🐘 <strong>Indlovu</strong> — <em>isiZulu for elephant</em> — built in South Africa 🇿🇦</p>
+    <p style="margin-top: 8px;">MIT License · <a href="https://github.com/ameen/indlovu">GitHub</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

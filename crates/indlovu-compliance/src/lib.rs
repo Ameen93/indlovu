@@ -8,8 +8,10 @@
 
 pub mod audit;
 pub mod compliant_store;
+pub mod erasure;
 pub mod retention;
 
 pub use audit::InMemoryAuditLog;
 pub use compliant_store::CompliantStore;
+pub use erasure::{execute_erasure, ErasureCertificate};
 pub use retention::RetentionPolicy;
